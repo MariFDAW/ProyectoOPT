@@ -9,6 +9,8 @@ import com.example.proyectovideojuegos.auth.LoginScreen
 import com.example.proyectovideojuegos.views.homeScreen
 import com.example.proyectovideojuegos.views.loginScreen
 import com.example.proyectovideojuegos.views.registerScreen
+import videojuegosFormScreen
+import videojuegosListScreen
 
 
 @Composable //loginScreen es el ViewModel
@@ -27,6 +29,14 @@ fun AppNavigation(modifier: Modifier = Modifier,loginScreen: LoginScreen) {
             backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             homeScreen(modifier,navController,loginScreen,email)
+        }
+        composable("videojuegosList") {
+            videojuegosListScreen(modifier,navController,loginScreen)
+        }
+        composable("videojuegosForm/{rolUsuario}") {
+                backStackEntry ->
+            val rolUsuario = backStackEntry.arguments?.getString("rolUsuario") ?: "usuario"
+            videojuegosFormScreen(modifier,navController,loginScreen,rolUsuario)
         }
     }
 }

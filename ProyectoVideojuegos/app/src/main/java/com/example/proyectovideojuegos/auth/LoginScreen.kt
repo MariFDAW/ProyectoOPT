@@ -13,6 +13,9 @@ class LoginScreen: ViewModel() {
 
     private val authSte = MutableLiveData<AuthState>()
     val authState: LiveData<AuthState> = authSte
+    private val userRol = MutableLiveData<String>()
+    val rolUsuario: LiveData<String> = userRol
+
 
     init {
         checkAuthenticated()
@@ -68,7 +71,8 @@ class LoginScreen: ViewModel() {
 
                         val datosUsuario = Usuario(
                             uid = uid,
-                            email = email
+                            email = email,
+                            rol = "usuario"
                         )
 
                         database.child("usuarios").child(uid).setValue(datosUsuario)
@@ -89,6 +93,18 @@ class LoginScreen: ViewModel() {
     fun cerrarSesion(){
         auth.signOut()
         authSte.value = AuthState.Unauthenticated
+    }
+
+    //Funcion con la cual se el rol del usuario logeado
+    fun cargarRolUsuario(){
+        val uid = auth.currentUser?.uid ?: return
+        val usuarioLogeado = FirebaseDatabase.getInstance(
+            "https://proyectovideojuegos-fbd46-default-rtdb.europe-west1.firebasedatabase.app"
+        ).getReference("usuarios").child(uid)
+        usuarioLogeado.get().addOnSuccessListener { result ->
+            val rol = result.child("rol").getValue(String::class.java)
+            userRol.value = rol ?: "usuario"
+        }
     }
 }
 
