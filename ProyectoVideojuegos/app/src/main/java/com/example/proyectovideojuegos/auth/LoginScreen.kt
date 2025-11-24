@@ -25,6 +25,7 @@ class LoginScreen: ViewModel() {
             authSte.value = AuthState.Unauthenticated
         }else{
             authSte.value = AuthState.Authenticated
+            cargarRolUsuario()
         }
     }
 
@@ -41,6 +42,7 @@ class LoginScreen: ViewModel() {
                 task ->
                 if(task.isSuccessful){
                     authSte.value = AuthState.Authenticated
+                    cargarRolUsuario()
                 }else{
                     authSte.value = AuthState.Error(task.exception?.message?: "Algo ha ido mal")
                 }
@@ -78,6 +80,7 @@ class LoginScreen: ViewModel() {
                         database.child("usuarios").child(uid).setValue(datosUsuario)
                             .addOnSuccessListener {
                                 authSte.value = AuthState.Authenticated
+                                cargarRolUsuario()
                             }
                             .addOnFailureListener {
                                 authSte.value = AuthState.Error("Error al guardar al usuario en la BD")
@@ -93,6 +96,7 @@ class LoginScreen: ViewModel() {
     fun cerrarSesion(){
         auth.signOut()
         authSte.value = AuthState.Unauthenticated
+        userRol.value = ""
     }
 
     //Funcion con la cual se el rol del usuario logeado
@@ -104,7 +108,13 @@ class LoginScreen: ViewModel() {
         usuarioLogeado.get().addOnSuccessListener { result ->
             val rol = result.child("rol").getValue(String::class.java)
             userRol.value = rol ?: "usuario"
+        }.addOnFailureListener {
+            userRol.value = "usuario"
         }
+    }
+
+    fun comprobarAdmin(): Boolean{
+        return userRol.value == "admin"
     }
 }
 

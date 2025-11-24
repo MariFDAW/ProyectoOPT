@@ -30,8 +30,10 @@ fun AppNavigation(modifier: Modifier = Modifier,loginScreen: LoginScreen) {
             val email = backStackEntry.arguments?.getString("email") ?: ""
             homeScreen(modifier,navController,loginScreen,email)
         }
-        composable("videojuegosList") {
-            videojuegosListScreen(modifier,navController,loginScreen)
+        composable("videojuegosList/{rolUsuario}") {
+                backStackEntry ->
+            val rolUsuario = backStackEntry.arguments?.getString("rolUsuario") ?: "usuario"
+            videojuegosListScreen(modifier,navController,loginScreen,rolUsuario)
         }
         composable("videojuegosForm/{rolUsuario}") {
                 backStackEntry ->
