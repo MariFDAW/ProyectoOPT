@@ -11,20 +11,28 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.proyectovideojuegos.auth.AuthState
@@ -34,67 +42,113 @@ import com.example.proyectovideojuegos.models.Videojuegos
 
 @Composable
 fun videojuegosListScreen(
-    modifier: Modifier, navController: NavController, loginScreen: LoginScreen,videojuegosView: VideojuegosView = viewModel()) {
+    modifier: Modifier, navController: NavController, loginScreen: LoginScreen,videojuegosView: VideojuegosView) {
 
     val rolUsuario by loginScreen.rolUsuario.observeAsState("usuario")
+    val authState = loginScreen.authState.observeAsState()
 
     val videojuegos by videojuegosView.videojuegos.observeAsState(emptyList())
     val loading by videojuegosView.loading.observeAsState(false)
     val error by videojuegosView.error.observeAsState()
 
-    //Mostrar lista de videojuegos con foreach
+    LaunchedEffect(authState.value) {
+        when(authState.value){
+            is AuthState.Unauthenticated -> navController.navigate("login")
+            else -> Unit
+        }
+    }
+
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .padding(horizontal = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // Título
+        item {
+            Text(
+                "Mis Videojuegos",
+                fontSize = 32.sp,
+                color = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                Button(
+                    onClick = { loginScreen.cerrarSesion() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Green,
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text("Salir")
+                }
+
+                if (rolUsuario == "admin") {
+                    Button(
+                        onClick = { navController.navigate("videojuegosForm") },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Green,
+                            contentColor = Color.Black
+                        )
+                    ) {
+                        Text("Añadir Videojuego")
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+
     if (loading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally)
-            {
-                CircularProgressIndicator()
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Cargando lista de videojuegos...",
-                    color = Color.LightGray
-                )
+        item {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Color.Green)
             }
         }
     } else if (videojuegos.isEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally)
-            {
-                Text(
-                    text = "No hay videojuegos por el momento...",
-                    color = Color.LightGray
-                )
-            }
+        item {
+            Text(
+                text = "No hay videojuegos por el momento...",
+                color = Color.LightGray
+            )
         }
     } else {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(videojuegos) { videojuego ->
-                VideojuegoCard(
-                    videojuego = videojuego
-                )
-            }
+        items(videojuegos) { videojuego ->
+            VideojuegoTarjeta(videojuego, rolUsuario, navController)
         }
-
+        }
     }
+
 }
 
 @Composable
-fun VideojuegoCard(videojuego: Videojuegos) {
+fun VideojuegoTarjeta(
+    videojuego: Videojuegos,
+    rolUsuario: String,
+    navController: NavController) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF1DB954)
+        )
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Título y ID
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -102,12 +156,25 @@ fun VideojuegoCard(videojuego: Videojuegos) {
             ) {
                 Text(
                     text = videojuego.nombre,
+                    color = Color.Black
                 )
+                if (rolUsuario == "admin") {
+                    IconButton(onClick = {
+                        navController.navigate("videojuegosForm")
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Editar videojuego",
+                            tint = Color.Black
+                        )
+                    }
+                }
+
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Estado y Calificación
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -115,31 +182,64 @@ fun VideojuegoCard(videojuego: Videojuegos) {
                 Column {
                     Text(
                         text = "Estado: " + videojuego.completado,
+                        color = Color.Black
                     )
+                    if (videojuego.resenia.isNotEmpty()) {
+                        Spacer(
+                            modifier = Modifier.height(12.dp)
+                        )
+                        Text(
+                            text = "Reseña:",
+                            color = Color.Black
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = videojuego.resenia,
+                            color = Color.Black
+                        )
+                    }
                 }
-                Column(horizontalAlignment = Alignment.End) {
+                Column(
+                    horizontalAlignment = Alignment.End
+                ) {
                     Text(
                         text = "${videojuego.calificacion}/5",
+                        color = Color.Black
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Añadido: ${videojuego.fecha}",
+
+            Spacer(
+                modifier = Modifier.height(8.dp)
             )
-            // Reseña
-            if (videojuego.resenia.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(12.dp))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(8.dp))
+            HorizontalDivider(
+                color = Color.Black
+            )
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    text = "Reseña:",
+                    text = "Añadido: ${videojuego.fecha}",
+                    color = Color.Black
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = videojuego.resenia,
-                )
+                if (rolUsuario == "admin") {
+                    IconButton(onClick = {
+                        //Llama a eliminar
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Borrar videojuego",
+                            tint = Color.Red
+                        )
+                    }
+                }
             }
+
         }
     }
 }

@@ -31,15 +31,11 @@ fun AppNavigation(modifier: Modifier = Modifier,loginScreen: LoginScreen, videoj
             val email = backStackEntry.arguments?.getString("email") ?: ""
             homeScreen(modifier,navController,loginScreen,email)
         }
-        composable("videojuegosList/{rolUsuario}") {
-                backStackEntry ->
-            val rolUsuario = backStackEntry.arguments?.getString("rolUsuario") ?: "usuario"
-            videojuegosListScreen(modifier,navController,loginScreen,)
+        composable("videojuegosList") {
+            videojuegosListScreen(modifier,navController,loginScreen,videojuegosView)
         }
-        composable("videojuegosForm/{rolUsuario}") {
-                backStackEntry ->
-            val rolUsuario = backStackEntry.arguments?.getString("rolUsuario") ?: "usuario"
-            videojuegosFormScreen(modifier,navController,videojuegosView)
+        composable("videojuegosForm") {
+            videojuegosFormScreen(modifier,navController,loginScreen,videojuegosView)
         }
     }
 }

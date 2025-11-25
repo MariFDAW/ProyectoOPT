@@ -9,7 +9,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -18,13 +20,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.proyectovideojuegos.auth.LoginScreen
 import com.example.proyectovideojuegos.auth.VideojuegosView
 
 @Composable
 fun videojuegosFormScreen(
-    modifier: Modifier, navController: NavController, loginScreen: VideojuegosView){
+    modifier: Modifier, navController: NavController, loginScreen: LoginScreen, videojuegosView: VideojuegosView){
+
+    val rolUsuario by loginScreen.rolUsuario.observeAsState("usuario")
+    val transaccionCompletada by videojuegosView.transaccionCompletada.observeAsState()
 
     var nombre by remember {
         mutableStateOf("")
@@ -38,19 +44,24 @@ fun videojuegosFormScreen(
     var resenia by remember {
         mutableStateOf("")
     }
-/*
-    val authState = loginScreen.authState.observeAsState()
-    val context = LocalContext.current
 
-    LaunchedEffect(authState.value) {
-        when(authState.value){
-            is AuthState.Authenticated -> navController.navigate("")
-            is AuthState.Error -> Toast.makeText(context,(
-                    authState.value as AuthState.Error).message,
-                Toast.LENGTH_SHORT).show()
-            else -> Unit
+    if (rolUsuario == "admin") {
+
+        LaunchedEffect(transaccionCompletada) {
+            if (transaccionCompletada == true) {
+                navController.navigate("videojuegosList") {
+                    popUpTo("videojuegosForm") { inclusive = true }
+                }
+            }
         }
-    }*/
+
+    } else {
+        LaunchedEffect(Unit) {
+            navController.navigate("videojuegosList") {
+                popUpTo("videojuegosForm") { inclusive = true }
+            }
+        }
+    }
 
     Column(
         modifier = modifier.fillMaxSize().background(Color.Black),
@@ -172,7 +183,7 @@ fun videojuegosFormScreen(
         )
 
         Button(onClick = {
-            loginScreen.insertarVideojuego(
+            videojuegosView.insertarVideojuego(
                 nombre,
                 completado,
                 calificacion.toIntOrNull() ?: 0,

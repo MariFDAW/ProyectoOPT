@@ -44,7 +44,7 @@ fun registerScreen(modifier: Modifier, navController: NavController,loginScreen:
 
     LaunchedEffect(authState.value) {
         when(authState.value){
-            is AuthState.Authenticated -> navController.navigate("home/${email}")
+            is AuthState.Authenticated -> navController.navigate("login")
             is AuthState.Error -> Toast.makeText(context,(
                     authState.value as AuthState.Error).message,
                 Toast.LENGTH_SHORT).show()

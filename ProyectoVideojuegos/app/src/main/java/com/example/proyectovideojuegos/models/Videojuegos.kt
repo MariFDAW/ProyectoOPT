@@ -6,5 +6,5 @@ data class Videojuegos(
     var completado: String ="",
     var calificacion: Int = 0,
     var resenia: String = "",
-    var fecha: String
+    var fecha: String = ""
 )
