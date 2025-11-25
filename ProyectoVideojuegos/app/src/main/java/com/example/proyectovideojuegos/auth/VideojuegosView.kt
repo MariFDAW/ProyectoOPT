@@ -54,8 +54,8 @@ class VideojuegosView : ViewModel() {
     }
 
     fun insertarVideojuego(nombre: String, completado: String, calificacion: Int, resenia: String) {
-        _loading.value = true
 
+        _loading.value = true
 
         database.orderByChild("videojuegoId").limitToLast(1).get()
             .addOnSuccessListener { resultado ->
