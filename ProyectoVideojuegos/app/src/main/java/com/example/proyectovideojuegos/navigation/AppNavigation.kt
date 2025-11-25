@@ -7,7 +7,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectovideojuegos.auth.LoginScreen
 import com.example.proyectovideojuegos.auth.VideojuegosView
-import com.example.proyectovideojuegos.views.homeScreen
 import com.example.proyectovideojuegos.views.loginScreen
 import com.example.proyectovideojuegos.views.registerScreen
 import com.example.proyectovideojuegos.views.videojuegosFormEditarScreen
@@ -26,11 +25,6 @@ fun AppNavigation(modifier: Modifier = Modifier,loginScreen: LoginScreen, videoj
         }
         composable("register") {
             registerScreen(modifier,navController,loginScreen)
-        }
-        composable("home/{email}") {
-            backStackEntry ->
-            val email = backStackEntry.arguments?.getString("email") ?: ""
-            homeScreen(modifier,navController,loginScreen,email)
         }
         composable("videojuegosList") {
             videojuegosListScreen(modifier,navController,loginScreen,videojuegosView)
