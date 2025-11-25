@@ -160,7 +160,7 @@ fun VideojuegoTarjeta(
                 )
                 if (rolUsuario == "admin") {
                     IconButton(onClick = {
-                        navController.navigate("videojuegosForm")
+                        navController.navigate("videojuegosFormEditar/${videojuego.videojuegoId}")
                     }) {
                         Icon(
                             imageVector = Icons.Default.Edit,

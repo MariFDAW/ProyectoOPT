@@ -10,7 +10,8 @@ import com.example.proyectovideojuegos.auth.VideojuegosView
 import com.example.proyectovideojuegos.views.homeScreen
 import com.example.proyectovideojuegos.views.loginScreen
 import com.example.proyectovideojuegos.views.registerScreen
-import videojuegosFormScreen
+import com.example.proyectovideojuegos.views.videojuegosFormEditarScreen
+import com.example.proyectovideojuegos.views.videojuegosFormScreen
 import videojuegosListScreen
 
 
@@ -36,6 +37,11 @@ fun AppNavigation(modifier: Modifier = Modifier,loginScreen: LoginScreen, videoj
         }
         composable("videojuegosForm") {
             videojuegosFormScreen(modifier,navController,loginScreen,videojuegosView)
+        }
+        composable("videojuegosFormEditar/{videojuegoId}") {backStackEntry ->
+
+            val videojuegoId = backStackEntry.arguments?.getString("videojuegoId")?.toIntOrNull() ?: -1
+            videojuegosFormEditarScreen(modifier,navController,loginScreen,videojuegosView,videojuegoId)
         }
     }
 }

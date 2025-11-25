@@ -35,36 +35,59 @@ import com.example.proyectovideojuegos.auth.LoginScreen
 import com.example.proyectovideojuegos.auth.VideojuegosView
 
 @Composable
-fun videojuegosFormScreen(
-    modifier: Modifier, navController: NavController, loginScreen: LoginScreen, videojuegosView: VideojuegosView){
+fun videojuegosFormEditarScreen(
+    modifier: Modifier, navController: NavController, loginScreen: LoginScreen, videojuegosView: VideojuegosView,videojuegoId:Int){
 
     val rolUsuario by loginScreen.rolUsuario.observeAsState("usuario")
     val transaccionCompletada by videojuegosView.transaccionCompletada.observeAsState()
 
+    val nombreVideojuego by videojuegosView.nombre.observeAsState("")
+    val completadoVideojuego by videojuegosView.completado.observeAsState("")
+    val calificacionVideojuego by videojuegosView.calificacion.observeAsState(0)
+    val reseniaVideojuego by videojuegosView.resenia.observeAsState("")
+
     var nombre by remember {
-        mutableStateOf("")
+        mutableStateOf(videojuegosView.nombre.value)
     }
     var completado by remember {
-        mutableStateOf("")
+        mutableStateOf(videojuegosView.completado.value)
     }
-    var calificacion by remember {
-        mutableStateOf("")
+    var calificacion  by remember {
+        mutableStateOf(videojuegosView.calificacion.value)
     }
     var resenia by remember {
-        mutableStateOf("")
+        mutableStateOf(videojuegosView.resenia.value)
     }
 
-    var clickado by remember { mutableStateOf(false) }
+    var clickado by remember {
+        mutableStateOf(false)
+    }
     val opcionesEstado = listOf("Completado", "En curso", "Pendiente")
 
+
+    //Este metodo se ejecuta cuando se crea el componente
     LaunchedEffect(Unit) {
         videojuegosView.limpiarTransaccion()
     }
 
+    //Este metodo se ejecuta cuando se desmonta el componente
     DisposableEffect(Unit) {
         onDispose {
             videojuegosView.limpiarTransaccion()
         }
+    }
+
+    LaunchedEffect(videojuegoId) {
+        videojuegosView.cargarVideojuegoAModificar(videojuegoId)
+    }
+
+    LaunchedEffect(nombreVideojuego, completadoVideojuego, calificacionVideojuego, reseniaVideojuego) {
+
+        nombre = nombreVideojuego
+        completado = completadoVideojuego
+        calificacion = calificacionVideojuego
+        resenia = reseniaVideojuego
+
     }
 
     if (rolUsuario == "admin") {
@@ -74,7 +97,6 @@ fun videojuegosFormScreen(
                 navController.navigate("videojuegosList") {
                     popUpTo("videojuegosForm") { inclusive = true }
                 }
-                videojuegosView.limpiarTransaccion()
             }
         }
 
@@ -92,7 +114,7 @@ fun videojuegosFormScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Añadir",
+            text = "Actualizar",
             fontSize = 42.sp,
             color = Color.White
         )
@@ -127,9 +149,9 @@ fun videojuegosFormScreen(
             modifier = Modifier.height(16.dp)
         )
         OutlinedTextField(
-            value = calificacion ,
-            onValueChange = {
-                calificacion = it
+            value = calificacion.toString() ,
+            onValueChange = { calificacionIntroducida ->
+                videojuegosView.calificacion.value = calificacionIntroducida.toIntOrNull() ?: 0
             },
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color(0xFF1DB954),
@@ -216,15 +238,17 @@ fun videojuegosFormScreen(
         Spacer(
             modifier = Modifier.height(30.dp)
         )
+
         Row (
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ){
             Button(onClick = {
-                videojuegosView.insertarVideojuego(
+                videojuegosView.actualizarVideojuego(
+                    videojuegoId,
                     nombre,
                     completado,
-                    calificacion.toIntOrNull() ?: 0,
+                    calificacion,
                     resenia
                 )
 
@@ -233,7 +257,7 @@ fun videojuegosFormScreen(
                 contentColor = Color.Black
             )) {
                 Text(
-                    text = "Añadir"
+                    text = "Actualizar Datos"
                 )
             }
             Button(onClick = {
@@ -247,5 +271,6 @@ fun videojuegosFormScreen(
                 )
             }
         }
+
     }
 }

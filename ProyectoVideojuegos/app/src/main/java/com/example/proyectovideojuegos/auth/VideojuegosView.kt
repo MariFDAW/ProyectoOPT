@@ -23,8 +23,8 @@ class VideojuegosView : ViewModel() {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    private val _transaccionCompletada = MutableLiveData<Boolean>()
-    val transaccionCompletada: LiveData<Boolean> = _transaccionCompletada
+     val transaccionCompletada = MutableLiveData<Boolean>()
+
     private val database = FirebaseDatabase.getInstance(
         "https://proyectovideojuegos-fbd46-default-rtdb.europe-west1.firebasedatabase.app"
     ).reference.child("videojuegos")
@@ -90,11 +90,11 @@ class VideojuegosView : ViewModel() {
                 database.child(nuevoUltimoId.toString()).setValue(videojuegos)
                     .addOnSuccessListener {
                         _error.value = null
-                        _transaccionCompletada.value = true
+                        transaccionCompletada.value = true
                     }
                     .addOnFailureListener { exception ->
                         _error.value = "Error al insertar en la bd"
-                        _transaccionCompletada.value = false
+                        limpiarTransaccion()
                     }
             }.addOnFailureListener { exception ->
                 _loading.value = false
@@ -123,11 +123,16 @@ class VideojuegosView : ViewModel() {
         )
         database.child(videojuegoId.toString()).updateChildren(datosActualizados)
             .addOnSuccessListener {
-                _transaccionCompletada.value = true
+                transaccionCompletada.value = true
             }
             .addOnFailureListener {
                 _error.value = "Error al actualizar los datos"
+                limpiarTransaccion()
             }
+    }
+
+    fun limpiarTransaccion(){
+        transaccionCompletada.value = false
     }/*
     fun eliminar(videojuegoId: String){
         database.child(videojuegoId).removeValue()
