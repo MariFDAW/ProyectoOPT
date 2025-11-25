@@ -133,10 +133,5 @@ class VideojuegosView : ViewModel() {
 
     fun limpiarTransaccion(){
         transaccionCompletada.value = false
-    }/*
-    fun eliminar(videojuegoId: String){
-        database.child(videojuegoId).removeValue()
-            .addOnSuccessListener { Toast.makeText(context,
-                "Elemento eliminado", Toast.LENGTH_SHORT).show() }
-    }*/
+    }
 }

@@ -1,4 +1,5 @@
 import android.widget.Button
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +41,7 @@ import com.example.proyectovideojuegos.auth.AuthState
 import com.example.proyectovideojuegos.auth.LoginScreen
 import com.example.proyectovideojuegos.auth.VideojuegosView
 import com.example.proyectovideojuegos.models.Videojuegos
+import com.google.firebase.database.FirebaseDatabase
 
 @Composable
 fun videojuegosListScreen(
@@ -48,8 +51,6 @@ fun videojuegosListScreen(
     val authState = loginScreen.authState.observeAsState()
 
     val videojuegos by videojuegosView.videojuegos.observeAsState(emptyList())
-    val loading by videojuegosView.loading.observeAsState(false)
-    val error by videojuegosView.error.observeAsState()
 
     LaunchedEffect(authState.value) {
         when(authState.value){
@@ -84,7 +85,7 @@ fun videojuegosListScreen(
                 Button(
                     onClick = { loginScreen.cerrarSesion() },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Green,
+                        containerColor = Color(0xFF1DB954),
                         contentColor = Color.Black
                     )
                 ) {
@@ -95,7 +96,7 @@ fun videojuegosListScreen(
                     Button(
                         onClick = { navController.navigate("videojuegosForm") },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Green,
+                            containerColor = Color(0xFF1DB954),
                             contentColor = Color.Black
                         )
                     ) {
@@ -107,16 +108,7 @@ fun videojuegosListScreen(
         }
 
 
-    if (loading) {
-        item {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = Color.Green)
-            }
-        }
-    } else if (videojuegos.isEmpty()) {
+     if (videojuegos.isEmpty()) {
         item {
             Text(
                 text = "No hay videojuegos por el momento...",
@@ -137,6 +129,10 @@ fun VideojuegoTarjeta(
     videojuego: Videojuegos,
     rolUsuario: String,
     navController: NavController) {
+
+    val context = LocalContext.current
+    val videojuegosRef = FirebaseDatabase.getInstance().getReference("videojuegos")
+
     Card(
         modifier = Modifier.fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -229,7 +225,13 @@ fun VideojuegoTarjeta(
                 )
                 if (rolUsuario == "admin") {
                     IconButton(onClick = {
-                        //Llama a eliminar
+                        videojuegosRef.child(videojuego.videojuegoId.toString()).removeValue()
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "Elemento eliminado", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(context, "Error al eliminar: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
                     }) {
                         Icon(
                             imageVector = Icons.Default.Delete,

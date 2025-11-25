@@ -1,5 +1,6 @@
 package com.example.proyectovideojuegos.views
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -27,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -56,6 +59,8 @@ fun videojuegosFormScreen(
 
     var clickado by remember { mutableStateOf(false) }
     val opcionesEstado = listOf("Completado", "En curso", "Pendiente")
+
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         videojuegosView.limpiarTransaccion()
@@ -160,15 +165,23 @@ fun videojuegosFormScreen(
         Spacer(
             modifier = Modifier.height(8.dp)
         )
-        Box {
+        Box (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 62.dp)
+        ){
             Button(
                 onClick = { clickado = true },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF1DB954),
                     contentColor = Color.White
-                )
+                ),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(completado)
+                Text(
+                    text = completado,
+                    color = Color.Black
+                )
             }
 
             DropdownMenu(
@@ -221,15 +234,19 @@ fun videojuegosFormScreen(
             horizontalArrangement = Arrangement.SpaceAround
         ){
             Button(onClick = {
-                videojuegosView.insertarVideojuego(
-                    nombre,
-                    completado,
-                    calificacion.toIntOrNull() ?: 0,
-                    resenia
-                )
+                if (nombre.isBlank() || completado.isBlank() || calificacion.isBlank()) {
+                    Toast.makeText(context, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
+                } else {
+                    videojuegosView.insertarVideojuego(
+                        nombre,
+                        completado,
+                        calificacion.toIntOrNull() ?: 0,
+                        resenia
+                    )
+                }
 
             },colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Green,
+                containerColor = Color(0xFF1DB954),
                 contentColor = Color.Black
             )) {
                 Text(
@@ -239,7 +256,7 @@ fun videojuegosFormScreen(
             Button(onClick = {
                 navController.navigate("videojuegosList")
             },colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Green,
+                containerColor = Color(0xFF1DB954),
                 contentColor = Color.Black
             )) {
                 Text(
