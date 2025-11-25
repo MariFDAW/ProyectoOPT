@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectovideojuegos.auth.LoginScreen
+import com.example.proyectovideojuegos.auth.VideojuegosView
 import com.example.proyectovideojuegos.views.homeScreen
 import com.example.proyectovideojuegos.views.loginScreen
 import com.example.proyectovideojuegos.views.registerScreen
@@ -14,7 +15,7 @@ import videojuegosListScreen
 
 
 @Composable //loginScreen es el ViewModel
-fun AppNavigation(modifier: Modifier = Modifier,loginScreen: LoginScreen) {
+fun AppNavigation(modifier: Modifier = Modifier,loginScreen: LoginScreen, videojuegosView: VideojuegosView) {
     val navController = rememberNavController()
     val startDestination = "login"
 
@@ -33,12 +34,12 @@ fun AppNavigation(modifier: Modifier = Modifier,loginScreen: LoginScreen) {
         composable("videojuegosList/{rolUsuario}") {
                 backStackEntry ->
             val rolUsuario = backStackEntry.arguments?.getString("rolUsuario") ?: "usuario"
-            videojuegosListScreen(modifier,navController,loginScreen,rolUsuario)
+            videojuegosListScreen(modifier,navController,loginScreen,)
         }
         composable("videojuegosForm/{rolUsuario}") {
                 backStackEntry ->
             val rolUsuario = backStackEntry.arguments?.getString("rolUsuario") ?: "usuario"
-            videojuegosFormScreen(modifier,navController,loginScreen,rolUsuario)
+            videojuegosFormScreen(modifier,navController,videojuegosView)
         }
     }
 }

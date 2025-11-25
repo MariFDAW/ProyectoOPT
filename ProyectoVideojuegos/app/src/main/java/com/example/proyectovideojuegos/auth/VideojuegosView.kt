@@ -8,6 +8,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.text.SimpleDateFormat
+import java.util.*
 
 class VideojuegosView : ViewModel() {
 
@@ -16,8 +18,8 @@ class VideojuegosView : ViewModel() {
     private val _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean> = _loading
 
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> = _error
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
     private val database = FirebaseDatabase.getInstance(
         "https://proyectovideojuegos-fbd46-default-rtdb.europe-west1.firebasedatabase.app"
     ).reference.child("videojuegos")
@@ -30,8 +32,7 @@ class VideojuegosView : ViewModel() {
     private fun cargarListaVideojuegos() {
         _loading.value = true
 
-        database.child("videojuegos")
-            .addValueEventListener(object : ValueEventListener {
+        database.addValueEventListener(object : ValueEventListener {
 
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val listaVideojuegos = mutableListOf<Videojuegos>()
@@ -55,7 +56,6 @@ class VideojuegosView : ViewModel() {
 
     fun insertarVideojuego(nombre: String, completado: String, calificacion: Int, resenia: String) {
 
-        _loading.value = true
 
         database.orderByChild("videojuegoId").limitToLast(1).get()
             .addOnSuccessListener { resultado ->
@@ -64,15 +64,28 @@ class VideojuegosView : ViewModel() {
                     ?.child("videojuegoId")?.getValue(Int::class.java) ?: 0
                 val nuevoUltimoId = ultimoId + 1 //Incremento en 1
 
-                val videojuego = Videojuegos(
-                    videojuegoId = nuevoUltimoId,
-                    nombre = nombre,
-                    completado = completado,
-                    calificacion = calificacion,
-                    resenia = resenia
-                )
+                val fecha = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
+                val fechaFormateada= fecha.format(Date())
 
-                database.child(nuevoUltimoId.toString()).setValue(videojuego)
+                val videojuegos = HashMap<String, Any>()
+                videojuegos["videojuegosId"] = nuevoUltimoId
+                videojuegos["nombre"] = nombre
+                videojuegos["completado"] = completado
+                videojuegos["calificacion"] = calificacion
+                videojuegos["resenia"] = resenia
+                videojuegos["fecha"] = fechaFormateada
+
+
+                database.setValue(videojuegos)
+                    .addOnSuccessListener {
+                        _error.value = null
+                    }
+                    .addOnFailureListener { exception ->
+                        _error.value = "Error al insertar en la bd"
+                    }
+            }.addOnFailureListener { exception ->
+                _loading.value = false
+                _error.value = "Error al obtener ID al insertar"
             }
     }
 }

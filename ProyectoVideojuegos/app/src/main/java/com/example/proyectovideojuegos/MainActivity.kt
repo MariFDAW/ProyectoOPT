@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.example.proyectovideojuegos.auth.LoginScreen
+import com.example.proyectovideojuegos.auth.VideojuegosView
 import com.example.proyectovideojuegos.navigation.AppNavigation
 import com.example.proyectovideojuegos.ui.theme.ProyectoVideojuegosTheme
 
@@ -18,10 +19,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val loginScreen : LoginScreen by viewModels()
+        val videojuegosView: VideojuegosView by viewModels()
         setContent {
             ProyectoVideojuegosTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    innerPadding -> AppNavigation(modifier = Modifier.padding(innerPadding),loginScreen = loginScreen)
+                    innerPadding -> AppNavigation(modifier = Modifier.padding(innerPadding),loginScreen = loginScreen, videojuegosView)
                 }
             }
         }
