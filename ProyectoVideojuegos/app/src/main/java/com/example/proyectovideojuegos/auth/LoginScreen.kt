@@ -30,9 +30,10 @@ class LoginScreen: ViewModel() {
     }
 
     fun login(email: String,password: String){
-
+        val email = email.trim()
+        val password = password.trim()
         if(email.isEmpty() || password.isEmpty()){
-            authSte.value = AuthState.Error("Tanto el Email como la Contraseña deben estar rellenos")
+            authSte.value = AuthState.Error("Los campos deben estar rellenos")
             return
         }
 
@@ -44,15 +45,17 @@ class LoginScreen: ViewModel() {
                     authSte.value = AuthState.Authenticated
                     cargarRolUsuario()
                 }else{
-                    authSte.value = AuthState.Error(task.exception?.message?: "Algo ha ido mal")
+                    authSte.value = AuthState.Error("Email o contraseña incorrectos")
                 }
             }
     }
 
     fun registro(email: String,password: String){
 
+        val email = email.trim()
+        val password = password.trim()
         if(email.isEmpty() || password.isEmpty()){
-            authSte.value = AuthState.Error("Tanto el Email como la Contraseña deben estar rellenos")
+            authSte.value = AuthState.Error("Los campos deben estar rellenos")
             return
         }
 
@@ -89,7 +92,7 @@ class LoginScreen: ViewModel() {
                         authSte.value = AuthState.Error("No se puedo obtener el uid")
                     }
                 }else{
-                    authSte.value = AuthState.Error(task.exception?.message?: "Algo ha ido mal")
+                    authSte.value = AuthState.Error("Email o contraseña incorrectos")
                 }
             }
     }
@@ -112,10 +115,11 @@ class LoginScreen: ViewModel() {
             userRol.value = "usuario"
         }
     }
-
+/*
     fun comprobarAdmin(): Boolean{
         return userRol.value == "admin"
-    }
+    }*/
+
 }
 
 sealed class AuthState{

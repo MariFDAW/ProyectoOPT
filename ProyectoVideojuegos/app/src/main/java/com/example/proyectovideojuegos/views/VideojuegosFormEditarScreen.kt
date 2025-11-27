@@ -70,12 +70,12 @@ fun videojuegosFormEditarScreen(
     val context = LocalContext.current
 
 
-    //Este metodo se ejecuta cuando se crea el componente
+
     LaunchedEffect(Unit) {
         videojuegosView.limpiarTransaccion()
     }
 
-    //Este metodo se ejecuta cuando se desmonta el componente
+
     DisposableEffect(Unit) {
         onDispose {
             videojuegosView.limpiarTransaccion()

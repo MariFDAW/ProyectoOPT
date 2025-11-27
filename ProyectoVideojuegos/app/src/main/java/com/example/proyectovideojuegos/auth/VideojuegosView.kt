@@ -73,7 +73,7 @@ class VideojuegosView : ViewModel() {
                 //Cojo el id más grande osea el último
                 val ultimoId = resultado.children.firstOrNull() //Obtiene el primer hijo
                     ?.child("videojuegoId")?.getValue(Int::class.java) ?: 0
-                val nuevoUltimoId = ultimoId + 1 //Incremento en 1
+                val nuevoUltimoId = ultimoId + 1
 
                 val fecha = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
                 val fechaFormateada= fecha.format(Date())
@@ -98,7 +98,7 @@ class VideojuegosView : ViewModel() {
                     }
             }.addOnFailureListener { exception ->
                 _loading.value = false
-                _error.value = "Error al obtener ID al insertar"
+                _error.value = "Error al obtener ID "
             }
     }
     fun cargarVideojuegoAModificar(videojuegoId: Int) {

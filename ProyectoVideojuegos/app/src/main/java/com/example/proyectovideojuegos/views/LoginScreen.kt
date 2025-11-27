@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -45,9 +46,10 @@ fun loginScreen(modifier: Modifier, navController: NavController,loginScreen: Lo
 
     LaunchedEffect(authState.value) {
         when(authState.value){
-            is AuthState.Authenticated -> navController.navigate("videojuegosList")
-            is AuthState.Error -> Toast.makeText(context,(
-                    authState.value as AuthState.Error).message,
+            is AuthState.Authenticated ->
+                navController.navigate("videojuegosList")
+            is AuthState.Error ->
+                Toast.makeText(context,(authState.value as AuthState.Error).message,
                 Toast.LENGTH_SHORT).show()
             else -> Unit
         }
@@ -108,6 +110,7 @@ fun loginScreen(modifier: Modifier, navController: NavController,loginScreen: Lo
                 focusedContainerColor = Color.Black,
                 unfocusedContainerColor = Color.Black
             ),
+            visualTransformation = PasswordVisualTransformation(),
             label = {
                 Text(
                     text = "Contraseña",
@@ -119,7 +122,11 @@ fun loginScreen(modifier: Modifier, navController: NavController,loginScreen: Lo
             modifier = Modifier.height(30.dp)
         )
 
-        Button(onClick = {
+        Button(onClick = {/*
+            if(email.isEmpty() || password.isEmpty()){
+                Toast.makeText(context,"Ambos deben estar rellenos", Toast.LENGTH_SHORT).show()
+
+            }*/
             loginScreen.login(email,password)
         },
             enabled = authState.value != AuthState.Loading,
