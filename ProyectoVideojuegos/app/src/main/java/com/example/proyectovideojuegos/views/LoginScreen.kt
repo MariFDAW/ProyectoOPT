@@ -122,16 +122,17 @@ fun loginScreen(modifier: Modifier, navController: NavController,loginScreen: Lo
             modifier = Modifier.height(30.dp)
         )
 
-        Button(onClick = {/*
+        Button(onClick = {
             if(email.isEmpty() || password.isEmpty()){
                 Toast.makeText(context,"Ambos deben estar rellenos", Toast.LENGTH_SHORT).show()
+            }else{
+                loginScreen.login(email,password)
+            }
 
-            }*/
-            loginScreen.login(email,password)
         },
             enabled = authState.value != AuthState.Loading,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Green,
+                containerColor = Color(0xFF1DB954),
                 contentColor = Color.Black
             )
             ) {

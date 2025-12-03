@@ -48,16 +48,8 @@ fun videojuegosListScreen(
     modifier: Modifier, navController: NavController, loginScreen: LoginScreen,videojuegosView: VideojuegosView) {
 
     val rolUsuario by loginScreen.rolUsuario.observeAsState("usuario")
-    val authState = loginScreen.authState.observeAsState()
 
     val videojuegos by videojuegosView.videojuegos.observeAsState(emptyList())
-
-    LaunchedEffect(authState.value) {
-        when(authState.value){
-            is AuthState.Unauthenticated -> navController.navigate("login")
-            else -> Unit
-        }
-    }
 
     LazyColumn(
         modifier = modifier
@@ -66,10 +58,10 @@ fun videojuegosListScreen(
             .padding(horizontal = 8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Título
+
         item {
             Text(
-                "Mis Videojuegos",
+                text = "Mis Videojuegos",
                 fontSize = 32.sp,
                 color = Color.White,
                 modifier = Modifier
@@ -83,7 +75,12 @@ fun videojuegosListScreen(
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Button(
-                    onClick = { loginScreen.cerrarSesion() },
+                    onClick = {
+                        navController.navigate("login") {
+                            popUpTo(0) { inclusive = true }
+                        }
+                        loginScreen.cerrarSesion()
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF1DB954),
                         contentColor = Color.Black
@@ -152,6 +149,7 @@ fun VideojuegoTarjeta(
             ) {
                 Text(
                     text = videojuego.nombre,
+                    fontSize = 20.sp,
                     color = Color.Black
                 )
                 if (rolUsuario == "admin") {

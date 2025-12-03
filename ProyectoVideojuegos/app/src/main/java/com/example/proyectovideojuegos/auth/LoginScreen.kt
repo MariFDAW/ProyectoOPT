@@ -98,8 +98,9 @@ class LoginScreen: ViewModel() {
     }
     fun cerrarSesion(){
         auth.signOut()
+        userRol.value = "usuario"
         authSte.value = AuthState.Unauthenticated
-        userRol.value = ""
+
     }
 
     //Funcion con la cual se el rol del usuario logeado

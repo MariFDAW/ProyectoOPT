@@ -180,7 +180,7 @@ fun videojuegosFormScreen(
             ) {
                 Text(
                     text = completado,
-                    color = Color.Black
+                    color = Color.White
                 )
             }
 

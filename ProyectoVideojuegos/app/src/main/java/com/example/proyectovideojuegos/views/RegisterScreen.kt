@@ -122,11 +122,17 @@ fun registerScreen(modifier: Modifier, navController: NavController,loginScreen:
         )
 
         Button(onClick = {
-            loginScreen.registro(email,password)
+            if(email.isEmpty() || password.isEmpty()){
+                Toast.makeText(context,"Ambos deben estar rellenos", Toast.LENGTH_SHORT).show()
+
+            }else{
+                loginScreen.registro(email,password)
+            }
+
         },
             enabled = authState.value != AuthState.Loading,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Green,
+                containerColor = Color(0xFF1DB954),
                 contentColor = Color.Black
             )
         ) {
